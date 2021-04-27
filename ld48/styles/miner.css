@@ -1,0 +1,423 @@
+
+html, body {
+	padding: 0;
+	margin: 0;
+}
+
+body {
+	background: #000;
+	font-size: 16px;
+	font-size: calc(10px + 1vmin);
+	font-family: 'Ubuntu', sans-serif;
+	font-family: 'Assistant', sans-serif;
+	color: #fff;
+	--copper-filter: hue-rotate(155deg);
+	--iron-filter: grayscale(50%) brightness(0.85);
+	--titanium-filter: hue-rotate(-40deg) brightness(1.3);
+	--obsidian-filter: hue-rotate(40deg) brightness(0.8) contrast(1.3);
+}
+
+section, div {
+	box-sizing: border-box;
+}
+
+dt, dd {
+	display: inline-block;
+}
+dd {
+	margin-left: 1em;
+}
+
+button {
+	font-size: inherit;
+	font-family: inherit;
+	padding: 1em;
+	cursor: pointer;
+	background-color: rgba(0, 0, 0, 0.5);
+	border: solid 1px rgba(255, 255, 255, 0.6);
+	color: #fff;
+}
+button:hover {
+	background-color: rgba(0, 0, 0, 0.6);
+	border-color: rgba(255, 255, 255, 1);
+}
+button:active {
+	transform: scale(0.9);
+	background-color: rgba(0, 0, 0, 0.7);
+}
+
+a, a:visited {
+	color: #C5C4D4;
+}
+
+.intro {
+	opacity: 1;
+	overflow: hidden;
+}
+.intro.dismiss {
+	transform: scale(0);
+	opacity: 0;
+	transition: all 5s ease-in-out;
+}
+
+.main-header {
+	width: 60vw;
+	position: absolute;
+	top: 5vh;
+	left: calc(50vw - 30vw);
+	z-index: 5;
+	text-align: center;
+	color: white;
+}
+.title {
+
+}
+.title-1 {
+	display: block;
+	color: #52667C;
+	font-size: 50%;
+	margin-right: 10em;
+	transform: rotate(-10deg) translateY(0.5em);
+}
+.title-2 {
+	padding-bottom: 0.2em;
+	display: inline-block;
+	color: #6B7A8E;
+	transform: rotate(10deg);
+}
+.title-3 {
+	display: inline-block;
+	color: #C5C4D4;
+	margin: 0.2em 0;
+	transform: translateY(0.5em) rotate(-10deg);
+}
+.title-4 {
+	display: block;
+	margin-top: 0.2em;
+	font-size: 120%;
+	text-transform: uppercase;
+}
+.sub-title {
+	color: #52667C;
+	margin: 3.3vh 0;
+}
+
+.tips {
+	position: fixed;
+	z-index: 5;
+	bottom: 10vh;
+	width: 20em;
+	left: calc(50vw - 10em);
+}
+
+.world, .vehicle {
+	position: absolute;
+	top: 0;
+	left: 0;
+	bottom: 100%;
+	right: 100%;
+}
+.world {
+	width: 100%;
+	height: 100%;
+	overflow: hidden;
+}
+
+.vehicle,
+.connections {
+	position: absolute;
+	z-index: 2;
+	border: dashed 2px rgba(255, 255, 255, 0.2);
+	top: 50vh;
+	left: 50vw;
+	min-height: 1vmin;
+	min-width: 1vmin;
+}
+
+.vehicle {
+	/* transition: transform 0.3s ease-in-out; */
+	/* filter: drop-shadow(0px 16px 20px rgba(0, 0, 0, 0.5)); */
+}
+
+.block {
+	position: absolute;
+	/* border: solid 1px yellow; */
+	width: 10vmin;
+	height: 10vmin;
+	background-image: url('/images/hull-16x16.png');
+	background-size: 100% 100%;
+	image-rendering: pixelated;
+	filter:
+		drop-shadow(0px 2px 0px rgba(0, 0, 0, 0.5))
+		drop-shadow(0px -2px 0px rgba(0, 0, 0, 0.5))
+		drop-shadow(2px 0px 0px rgba(0, 0, 0, 0.5))
+		drop-shadow(-2px 0px 0px rgba(0, 0, 0, 0.5));
+	filter: drop-shadow(0px 16px 20px rgba(0, 0, 0, 0.5));
+}
+.construction {
+	filter: grayscale(50%);
+	opacity: 0.3;
+}
+.off {
+	filter: brightness(0.6);
+}
+
+.block-info-windows {
+	display: flex;
+	flex-wrap: wrap;
+	position: fixed;
+	width: 100vw;
+	z-index: 4;
+	top: 0;
+	left: 0;
+}
+.block-info {
+	display: flex;
+	flex-direction: column;
+	justify-content: space-between;
+	background-color: rgba(0, 0, 0, 0.5);
+	background-size: 3em 3em;
+	background-position: top right;
+	background-repeat: no-repeat;
+	image-rendering: pixelated;
+	border: solid 0px rgba(255, 255, 255, 0.8);
+	color: #fff;
+	text-shadow: 0 1px 1px #000, 1px 0 1px #000, 0 -1px 1px #000, -1px 0 1px #000;
+	padding: 0;
+	margin: 0;
+	max-width: 0;
+	max-height: 0;
+	top: 50vh;
+	left: 50vw;
+	transition: 0.2s all ease-in-out;
+	overflow: auto;
+	opacity: 0;
+	transform: scale(0);
+}
+.block-info.show {
+	padding: 1vmin;
+	margin: 1vmin;
+	width: 28vmin;
+	max-width: 40vmin;
+	max-height: 50vh;
+	border-width: 1px;
+	opacity: 1;
+	transform: scale(1);
+}
+.block-info-title {
+	text-transform: capitalize;
+}
+.cargo-list {
+	min-height: 2em;
+}
+.block-info-ui {
+	display: flex;
+	flex-wrap: wrap;
+	justify-content: space-between;
+}
+.block-info-ui button {
+	padding: 0.5em;
+	margin: 0.1em;
+	border-color: rgba(255, 255, 255, 0.3);
+}
+
+.connection {
+	position: absolute;
+	background: rgba(255, 255, 100, 0.2);
+	width: 5vmin;
+	height: 5vmin;
+}
+.highlight {
+	background: rgba(255, 255, 0, 0.7);
+}
+
+.build-ui,
+.game-ui {
+	position: absolute;
+	z-index: 10;
+	bottom: 0;
+	right: 0;
+	background-color: rgba(0, 0, 0, 0.5);
+	text-align: right;
+}
+
+.build-category-list {
+	display: none;
+	list-style: none;
+}
+
+.build-category-list.open {
+	display: block;
+}
+
+.build-block-list {
+	display: block;
+	list-style: none;
+}
+.build-block-list > li {
+	display: inline-block;
+}
+.build-block-list button {
+	image-rendering: pixelated;
+	background-repeat: no-repeat;
+	background-size: 2em 2em;
+	background-position: center left;
+	margin: 0.3em;
+	padding: 0.5em 1em;
+	text-shadow: 0 1px 1px #000, 1px 0 1px #000, 0 -1px 1px #000, -1px 0 1px #000;
+}
+.build-block {
+	/* cursor: grab;
+	z-index: 11; */
+}
+
+.game-ui {
+	display: none;
+	right: unset;
+	left: 0;
+}
+
+/* polygon {
+	stroke-width: 2px;
+	stroke: rgb(192, 199, 199);
+	fill: rgb(22, 29, 29);
+} */
+
+.planet {
+	position: absolute;
+	z-index: 1;
+	background-color: #533;
+	/* Thanks to http://www.noisetexturegenerator.com/ */
+	background-image: url('/images/noisy-texture-300x300-o5-d15-c-666-t1.png'), radial-gradient(circle, rgba(0,0,0,0.5) 0%, #333 25%, #666 35%, #533 100%);
+	background-size: 4% 4%, 100% 100%;
+	image-rendering: pixelated;
+	/* background-image: url('/images/noisy-texture-200x200-o24-d15-c-666-t1.png'); */
+	border-radius: 100%;
+	top: calc(50vh - 25vmin);
+	left: calc(50vw - 25vmin);
+	width: 50vmin;
+	height: 50vmin;
+}
+
+.holes {
+	position: absolute;
+	z-index: 1;
+	top: 0;
+	left: 0;
+	width: 100%;
+	height: 100%;
+}
+.hole {
+	position: absolute;
+	z-index: 1;
+	top: 0;
+	left: 0;
+	width: 10em;
+	height: 10em;
+	/* background-color: rgba(255, 0, 0, 0.1); */
+	background-color: rgba(0, 0, 0, 1);
+}
+
+.hand {
+	position: absolute;
+	z-index: 11;
+}
+
+.pilot {
+	position: absolute;
+	z-index: 3;
+	background-image: url('/images/pilot-base.png');
+	background-size: 100% 100%;
+	image-rendering: pixelated;
+}
+
+.info-footer {
+	position: fixed;
+	z-index: 9;
+	bottom: 0;
+	left: calc(50vw - 10em);
+	width: 20em;
+	text-align: center;
+	padding: 1em;
+	color: #fff;
+}
+.depth {
+	font-size: 120%;
+}
+
+.b-aluminum-cargo-drill {
+	background-image: url('/images/drill-test.png');
+}
+
+.b-mini-dome {
+	background-image: url('/images/dome-10x10.png');
+}
+
+.b-survival-core {
+	background-image: url('/images/survival-core.png');
+}
+
+.b-copper-hull {
+	background-image: url('/images/hull-16x16.png');
+	filter: var(--copper-filter);
+}
+.b-copper-structure-h {
+	background-image: url('/images/structure-horz-16x16.png');
+	filter: var(--copper-filter);
+}
+.b-copper-structure-v {
+	background-image: url('/images/structure-vert-16x16.png');
+	filter: var(--copper-filter);
+}
+.b-copper-drill {
+	background-image: url('/images/drill-16x16.png');
+	filter: var(--copper-filter);
+}
+.b-small-copper-drill {
+	background-image: url('/images/drill-test.png');
+	filter: var(--copper-filter);
+}
+.b-copper-cargo {
+	background-image: url('/images/cargo-a-16x16.png');
+	filter: var(--copper-filter);
+}
+.b-copper-printer {
+	background-image: url('/images/printer-16x16.png');
+	filter: var(--copper-filter);
+}
+.b-copper-refinery {
+	background-image: url('/images/refinery-16x16.png');
+	filter: var(--copper-filter);
+}
+
+.b-iron-hull { filter: var(--iron-filter); background-image: url('/images/hull-16x16.png'); }
+.b-iron-structure-h { filter: var(--iron-filter); background-image: url('/images/structure-horz-16x16.png'); }
+.b-iron-structure-v { filter: var(--iron-filter); background-image: url('/images/structure-vert-16x16.png'); }
+.b-iron-drill { filter: var(--iron-filter); background-image: url('/images/drill-16x16.png'); }
+.b-iron-cargo { filter: var(--iron-filter); background-image: url('/images/cargo-a-16x16.png'); }
+.b-iron-printer { filter: var(--iron-filter); background-image: url('/images/printer-16x16.png'); }
+.b-iron-refinery { filter: var(--iron-filter); background-image: url('/images/refinery-16x16.png'); }
+
+.b-aluminum-hull { filter: var(--aluminum-filter); background-image: url('/images/hull-16x16.png'); }
+.b-aluminum-structure-h { filter: var(--aluminum-filter); background-image: url('/images/structure-horz-16x16.png'); }
+.b-aluminum-structure-v { filter: var(--aluminum-filter); background-image: url('/images/structure-vert-16x16.png'); }
+.b-aluminum-drill { filter: var(--aluminum-filter); background-image: url('/images/drill-16x16.png'); }
+.b-aluminum-cargo { filter: var(--aluminum-filter); background-image: url('/images/cargo-a-16x16.png'); }
+.b-aluminum-printer { filter: var(--aluminum-filter); background-image: url('/images/printer-16x16.png'); }
+.b-aluminum-refinery { filter: var(--aluminum-filter); background-image: url('/images/refinery-16x16.png'); }
+
+.b-titanium-hull { filter: var(--titanium-filter); background-image: url('/images/hull-16x16.png'); }
+.b-titanium-structure-h { filter: var(--titanium-filter); background-image: url('/images/structure-horz-16x16.png'); }
+.b-titanium-structure-v { filter: var(--titanium-filter); background-image: url('/images/structure-vert-16x16.png'); }
+.b-titanium-drill { filter: var(--titanium-filter); background-image: url('/images/drill-16x16.png'); }
+.b-titanium-cargo { filter: var(--titanium-filter); background-image: url('/images/cargo-a-16x16.png'); }
+.b-titanium-printer { filter: var(--titanium-filter); background-image: url('/images/printer-16x16.png'); }
+.b-titanium-refinery { filter: var(--titanium-filter); background-image: url('/images/refinery-16x16.png'); }
+
+.b-obsidian-hull { filter: var(--obsidian-filter); background-image: url('/images/hull-16x16.png'); }
+.b-obsidian-structure-h { filter: var(--obsidian-filter); background-image: url('/images/structure-horz-16x16.png'); }
+.b-obsidian-structure-v { filter: var(--obsidian-filter); background-image: url('/images/structure-vert-16x16.png'); }
+.b-obsidian-drill { filter: var(--obsidian-filter); background-image: url('/images/drill-16x16.png'); }
+.b-obsidian-cargo { filter: var(--obsidian-filter); background-image: url('/images/cargo-a-16x16.png'); }
+.b-obsidian-printer { filter: var(--obsidian-filter); background-image: url('/images/printer-16x16.png'); }
+.b-obsidian-refinery { filter: var(--obsidian-filter); background-image: url('/images/refinery-16x16.png'); }
