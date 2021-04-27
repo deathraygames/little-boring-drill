@@ -107,24 +107,35 @@ const vehicleBlockTypes = Object.freeze({
 		cost: { "copper-parts": 30 },
 		cargoSpace: 10,
 		pulling: 1,
+		pulls: 'printed',
+	},
+	"iron-ore-cargo": {
+		category: "cargo",
+		cost: { "iron-beams": 25 },
+		cargoSpace: 10,
+		pulling: 1,
+		pulls: 'ore',
 	},
 	"aluminum-cargo": {
 		category: "cargo",
 		cost: { "aluminum-plates": 30 },
 		cargoSpace: 20,
 		pulling: 2,
+		pulls: 'printed',
 	},
 	"titanium-cargo": {
 		category: "cargo",
-		cost: { "titanium-parts": 30 },
+		cost: { "titanium-parts": 25 },
 		cargoSpace: 30,
 		pulling: 4,
+		pulls: 'printed',
 	},
 	"obsidian-cargo": {
 		category: "cargo",
 		cost: { "obsidian-parts": 30 },
 		cargoSpace: 40,
 		pulling: 5,
+		pulls: 'printed',
 	},
 
 	// Refineries

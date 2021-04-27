@@ -33,19 +33,23 @@ class DomRenderer {
 		return (
 			`<dl>
 				${costHtml}
-				<div><dt>Power:</dt><dd>${block.power} / ${o.powerCapacity}</dd><dd>${block.on ? 'ON' : 'OFF'}</dd></div>
+				<div>
+					<dt>Power:</dt>
+					<dd>${block.power} / ${o.powerCapacity}</dd>
+					<dd class="${block.on ? 'on' : 'off'}">${block.on ? 'ON' : 'OFF'}</dd>
+				</div>
 				${keys.map((key) => `<div><dt>${key}</dt><dd>${o[key]}</dd></div>`).join('')}
 				${cargoList}
 			</dl>`
 		);
 	}
 
-	static setElementSizeAndPosition(elt, width, height, top, left, zoom = this.zoom) {
+	static setElementSizeAndPosition(elt, width, height, top, left, zoom) {
 		const { style } = elt;
-		style.width = `${width}vmin`;
-		style.height = `${height}vmin`;
-		style.top = `${top}vmin`;
-		style.left = `${left}vmin`;
+		style.width = `${width * zoom}vmin`;
+		style.height = `${height * zoom}vmin`;
+		style.top = `${top * zoom}vmin`;
+		style.left = `${left * zoom}vmin`;
 	}
 
 	addElement(id, container, className = '', tagName = 'div', html = '') {
@@ -72,7 +76,7 @@ class DomRenderer {
 			top = (connection.pos.y - (connection.size / 2));
 			left = (connection.pos.x - (connection.size / 2));
 		}
-		DomRenderer.setElementSizeAndPosition(cElt, connection.size, connection.size, top, left);
+		DomRenderer.setElementSizeAndPosition(cElt, connection.size, connection.size, top, left, this.zoom);
 		// cElt.innerHTML = connection.id;
 		cStyle.display = (this.showConnections && !connection.connection) ? 'block' : 'none';
 		const highlight = this.highlightConnectionIds.includes(connection.id);
@@ -102,7 +106,7 @@ class DomRenderer {
 		const blockElt = this.addElement(b.id, vehElt, 'block');
 		blockElt.tabIndex = 0;
 		const blockCenter = b.getBlockCenter();
-		DomRenderer.setElementSizeAndPosition(blockElt, b.size.x, b.size.y, blockCenter.y, blockCenter.x);
+		DomRenderer.setElementSizeAndPosition(blockElt, b.size.x, b.size.y, blockCenter.y, blockCenter.x, this.zoom);
 		blockElt.classList.add(`b-${b.type}`);
 		blockElt.classList.toggle('construction', Boolean(b.costLeft));
 		blockElt.classList.toggle('off', !b.on);
@@ -118,7 +122,7 @@ class DomRenderer {
 
 	renderPilot(container) {
 		const pilotElt = this.addElement('pilot', container, 'pilot');
-		DomRenderer.setElementSizeAndPosition(pilotElt, 8, 8, -16, -4);
+		DomRenderer.setElementSizeAndPosition(pilotElt, 8, 8, -16, -4, this.zoom);
 	}
 	
 	renderVehicle(veh) {
@@ -159,7 +163,7 @@ class DomRenderer {
 	renderHole(hole, focusPosition, planetRadius) {
 		const elt = this.addElement(hole.id, this.elements.holes, 'hole');
 		const halfHoleSize = hole.size / 2;
-		DomRenderer.setElementSizeAndPosition(elt, hole.size, hole.size, hole.pos.y + planetRadius, planetRadius - halfHoleSize);
+		DomRenderer.setElementSizeAndPosition(elt, hole.size, hole.size, hole.pos.y + planetRadius, planetRadius - halfHoleSize, this.zoom);
 		const style = elt.style;
 		style.transform = `rotate(${hole.rotation}deg)`;
 	}
@@ -171,7 +175,7 @@ class DomRenderer {
 		const radius = diameter / 2;
 		const offsetX = -1 * radius - focusPosition.x;
 		const offsetY = -1 * radius - focusPosition.y;
-		DomRenderer.setElementSizeAndPosition(planetElt, diameter, diameter, offsetY, offsetX);
+		DomRenderer.setElementSizeAndPosition(planetElt, diameter, diameter, offsetY, offsetX, this.zoom);
 		planetStyle.top = `calc(50vh + ${offsetY}vmin)`;
 		planetStyle.left = `calc(50vw + ${offsetX}vmin)`;
 		const holeIds = [];

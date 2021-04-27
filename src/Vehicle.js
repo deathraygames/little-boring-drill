@@ -167,7 +167,10 @@ class Vehicle {
 		// Anything that can pull (Cargo, printers, refineries) will pull "final" items
 		// so that they can end up into cargo containers
 		const pullers = getFreeOperationalPullingBlocksByCapability('pulling');
-		pullers.forEach((b) => b.pullFromNeighborsByProperty('printed', b.typeObject.pulling));
+		pullers.forEach((b) => {
+			const { pulls, pulling } = b.typeObject;
+			if (pulls) b.pullFromNeighborsByProperty(pulls, pulling);
+		});
 		// TODO: Then conveyer belts pull and push
 	}
 

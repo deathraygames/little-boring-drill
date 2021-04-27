@@ -151,7 +151,6 @@ class VehicleBlock {
 
 	pullFromNeighborsByProperty(propName, takeHowMany = Infinity) {
 		const taken = [];
-		
 		this.getNeighbors().forEach((n) => {
 			if (taken.length >= takeHowMany) return taken;
 			// TODO: Handle ability to take multiple items from neighbors (i.e., more than 4 total)

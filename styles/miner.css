@@ -162,6 +162,7 @@ a, a:visited {
 	opacity: 0.3;
 }
 .off {
+	color: #c4b4ec;
 	filter: brightness(0.6);
 }
 
@@ -381,7 +382,7 @@ a, a:visited {
 	filter: var(--copper-filter);
 }
 .b-copper-cargo {
-	background-image: url('../images/cargo-a-16x16.png');
+	background-image: url('../images/cargo-b-16x16.png');
 	filter: var(--copper-filter);
 }
 .b-copper-printer {
@@ -397,7 +398,7 @@ a, a:visited {
 .b-iron-structure-h { filter: var(--iron-filter); background-image: url('../images/structure-horz-16x16.png'); }
 .b-iron-structure-v { filter: var(--iron-filter); background-image: url('../images/structure-vert-16x16.png'); }
 .b-iron-drill { filter: var(--iron-filter); background-image: url('../images/drill-16x16.png'); }
-.b-iron-cargo { filter: var(--iron-filter); background-image: url('../images/cargo-a-16x16.png'); }
+.b-iron-ore-cargo { filter: var(--iron-filter); background-image: url('../images/cargo-a-16x16.png'); }
 .b-iron-printer { filter: var(--iron-filter); background-image: url('../images/printer-16x16.png'); }
 .b-iron-refinery { filter: var(--iron-filter); background-image: url('../images/refinery-16x16.png'); }
 
@@ -405,7 +406,7 @@ a, a:visited {
 .b-aluminum-structure-h { filter: var(--aluminum-filter); background-image: url('../images/structure-horz-16x16.png'); }
 .b-aluminum-structure-v { filter: var(--aluminum-filter); background-image: url('../images/structure-vert-16x16.png'); }
 .b-aluminum-drill { filter: var(--aluminum-filter); background-image: url('../images/drill-16x16.png'); }
-.b-aluminum-cargo { filter: var(--aluminum-filter); background-image: url('../images/cargo-a-16x16.png'); }
+.b-aluminum-cargo { filter: var(--aluminum-filter); background-image: url('../images/cargo-b-16x16.png'); }
 .b-aluminum-printer { filter: var(--aluminum-filter); background-image: url('../images/printer-16x16.png'); }
 .b-aluminum-refinery { filter: var(--aluminum-filter); background-image: url('../images/refinery-16x16.png'); }
 
@@ -413,7 +414,7 @@ a, a:visited {
 .b-titanium-structure-h { filter: var(--titanium-filter); background-image: url('../images/structure-horz-16x16.png'); }
 .b-titanium-structure-v { filter: var(--titanium-filter); background-image: url('../images/structure-vert-16x16.png'); }
 .b-titanium-drill { filter: var(--titanium-filter); background-image: url('../images/drill-16x16.png'); }
-.b-titanium-cargo { filter: var(--titanium-filter); background-image: url('../images/cargo-a-16x16.png'); }
+.b-titanium-cargo { filter: var(--titanium-filter); background-image: url('../images/cargo-b-16x16.png'); }
 .b-titanium-printer { filter: var(--titanium-filter); background-image: url('../images/printer-16x16.png'); }
 .b-titanium-refinery { filter: var(--titanium-filter); background-image: url('../images/refinery-16x16.png'); }
 
@@ -421,6 +422,6 @@ a, a:visited {
 .b-obsidian-structure-h { filter: var(--obsidian-filter); background-image: url('../images/structure-horz-16x16.png'); }
 .b-obsidian-structure-v { filter: var(--obsidian-filter); background-image: url('../images/structure-vert-16x16.png'); }
 .b-obsidian-drill { filter: var(--obsidian-filter); background-image: url('../images/drill-16x16.png'); }
-.b-obsidian-cargo { filter: var(--obsidian-filter); background-image: url('../images/cargo-a-16x16.png'); }
+.b-obsidian-cargo { filter: var(--obsidian-filter); background-image: url('../images/cargo-b-16x16.png'); }
 .b-obsidian-printer { filter: var(--obsidian-filter); background-image: url('../images/printer-16x16.png'); }
 .b-obsidian-refinery { filter: var(--obsidian-filter); background-image: url('../images/refinery-16x16.png'); }
