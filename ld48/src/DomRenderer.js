@@ -113,6 +113,7 @@ class DomRenderer {
 			const insideBlock = !container;
 			this.renderConnection(connection, container || blockElt, insideBlock, b.size);
 		});
+		return blockElt;
 	}
 
 	renderPilot(container) {
@@ -146,7 +147,10 @@ class DomRenderer {
 			this.elements.hand.innerHTML = '';
 			return;
 		}
-		this.renderBlock(blockInHand, this.elements.hand);
+		const blockElt = this.renderBlock(blockInHand, this.elements.hand);
+		// Fix because the block in hand should use the full view screen sizes (vw, vh), not vmin
+		blockElt.style.top = `calc(${blockInHand.pos.y}vh - ${blockInHand.size.y / 2}vmin)`;
+		blockElt.style.left = `calc(${blockInHand.pos.x}vw - ${blockInHand.size.x / 2}vmin)`;
 		// const blockElt = this.addElement('blockInHand', this.elements.hand, 'block');
 		// blockElt.style.top = mouseCoordinates[1] + 'px';
 		// blockElt.style.left = mouseCoordinates[0] + 'px';
