@@ -126,7 +126,7 @@ a, a:visited {
 .vehicle,
 .connections {
 	position: absolute;
-	z-index: 2;
+	z-index: 4;
 	border: dashed 2px rgba(255, 255, 255, 0.2);
 	top: 50vh;
 	left: 50vw;
@@ -154,6 +154,9 @@ a, a:visited {
 		drop-shadow(-2px 0px 0px rgba(0, 0, 0, 0.5));
 	filter: drop-shadow(0px 16px 20px rgba(0, 0, 0, 0.5));
 }
+.block:hover {
+	cursor: pointer
+}
 .construction {
 	filter: grayscale(50%);
 	opacity: 0.3;
@@ -167,7 +170,7 @@ a, a:visited {
 	flex-wrap: wrap;
 	position: fixed;
 	width: 100vw;
-	z-index: 4;
+	z-index: 3;
 	top: 0;
 	left: 0;
 }
@@ -325,7 +328,7 @@ a, a:visited {
 
 .pilot {
 	position: absolute;
-	z-index: 3;
+	z-index: 4;
 	background-image: url('../images/pilot-base.png');
 	background-size: 100% 100%;
 	image-rendering: pixelated;
