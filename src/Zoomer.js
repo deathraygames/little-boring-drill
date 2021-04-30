@@ -13,6 +13,10 @@ class Zoomer {
 		this.zoom = DEFAULT_START_ZOOM;
 	}
 
+	getZoom() {
+		return this.zoom;
+	}
+
 	setup() {
 		window.addEventListener('wheel', (e) => {
 			// control speed based on current zoom, throttle the speed

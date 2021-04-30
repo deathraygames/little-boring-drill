@@ -2,7 +2,7 @@ import Vehicle from './Vehicle.js';
 import VehicleBlock from './VehicleBlock.js';
 import DomRenderer from './DomRenderer.js';
 import Zoomer from './Zoomer.js';
-import { getUniqueId, getDistance } from './utilities.js';
+import { getUniqueId, getDistance, shuffleOne } from './utilities.js';
 import Planet from './Planet.js';
 
 console.log('game');
@@ -49,11 +49,17 @@ function restart() {
 }
 
 function addHole() {
+	const drills = drill.getOperationalDrills();
+	if (drills.length <= 0) return;
+	const holeDrill = shuffleOne(drills);
 	planet.holes.push({
 		id: `hole-${getUniqueId()}`,
 		size: drill.getDrillSize(),
 		rotation: Math.round(Math.random() * 360),
-		pos: { x: drill.pos.x, y: drill.pos.y }, // TODO: start around a drill
+		pos: {
+			x: drill.pos.x + holeDrill.pos.x,
+			y: drill.pos.y + holeDrill.pos.y
+		},
 	});
 	if (planet.holes.length > MAX_HOLES) planet.holes.shift();
 }
@@ -127,7 +133,10 @@ function handleFrame(now) {
 	const connections = findConnections();
 	const distToCore = getDistance(0, 0, drill.pos.x, drill.pos.y);
 	focusPosition.y += .05; // TODO: Move towards drill pos at a speed that makes sense
-	renderer.render({ vehicles, blockInHand, connections, planet, distToCore, focusPosition });
+	renderer.render({
+		vehicles, blockInHand, connections, planet, distToCore, focusPosition,
+		zoom: zoomer.getZoom(),
+	});
 	if (Math.random() < 0.02 && drill.getDrillCount()) {
 		// TODO: Move to doTick if this isn't purely cosmetic
 		addHole();

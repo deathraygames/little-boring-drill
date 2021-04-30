@@ -44,12 +44,17 @@ class DomRenderer {
 		);
 	}
 
-	static setElementSizeAndPosition(elt, width, height, top, left, zoom) {
+	static setElementSizeAndPosition(elt, width, height, top, left, rotation = 0, zoom = 1) {
 		const { style } = elt;
+		const w = width * zoom;
+		const h = height * zoom;
 		style.width = `${width * zoom}vmin`;
 		style.height = `${height * zoom}vmin`;
-		style.top = `${top * zoom}vmin`;
-		style.left = `${left * zoom}vmin`;
+		style.transform = `translate(${left * zoom}vmin, ${top * zoom}vmin) rotate(${rotation}deg)`;
+		style.top = `${h/-2}vmin`;
+		style.left = `${w/-2}vmin`;
+		// style.top = `${top * zoom - (h/2)}vmin`;
+		// style.left = `${left * zoom - (w/2)}vmin`;
 	}
 
 	addElement(id, container, className = '', tagName = 'div', html = '') {
@@ -70,13 +75,13 @@ class DomRenderer {
 		const cStyle = cElt.style;
 		let top, left;
 		if (insideBlock) {
-			top = blockSize.y / 2 +  (connection.relativePos.y - (connection.size / 2));
-			left = blockSize.x / 2 + (connection.relativePos.x - (connection.size / 2));
+			top = blockSize.y / 2 +  (connection.relativePos.y); // - (connection.size / 2);
+			left = blockSize.x / 2 + (connection.relativePos.x); // - (connection.size / 2);
 		} else {
-			top = (connection.pos.y - (connection.size / 2));
-			left = (connection.pos.x - (connection.size / 2));
+			top = connection.pos.y; // - (connection.size / 2));
+			left = connection.pos.x; // - (connection.size / 2));
 		}
-		DomRenderer.setElementSizeAndPosition(cElt, connection.size, connection.size, top, left, this.zoom);
+		DomRenderer.setElementSizeAndPosition(cElt, connection.size, connection.size, top, left, 0, this.zoom);
 		// cElt.innerHTML = connection.id;
 		cStyle.display = (this.showConnections && !connection.connection) ? 'block' : 'none';
 		const highlight = this.highlightConnectionIds.includes(connection.id);
@@ -105,37 +110,37 @@ class DomRenderer {
 	renderBlock(b, vehElt, container) {
 		const blockElt = this.addElement(b.id, vehElt, 'block');
 		blockElt.tabIndex = 0;
-		const blockCenter = b.getBlockCenter();
-		DomRenderer.setElementSizeAndPosition(blockElt, b.size.x, b.size.y, blockCenter.y, blockCenter.x, this.zoom);
+		DomRenderer.setElementSizeAndPosition(blockElt, b.size.x, b.size.y, b.pos.y, b.pos.x, 0, this.zoom);
 		blockElt.classList.add(`b-${b.type}`);
 		blockElt.classList.toggle('construction', Boolean(b.costLeft));
 		blockElt.classList.toggle('off', !b.on);
-		blockElt.style.transform = `rotate(${b.rotation}deg)`;
+		// blockElt.style.transform = `rotate(${b.rotation}deg)`;
 		const showInfo = blockElt.classList.contains('show-info');
 		this.renderBlockInfo(b, showInfo);
+		const insideBlock = !container;
+		const connectionContainer = container || blockElt;
 		b.connections.forEach((connection) => {
-			const insideBlock = !container;
-			this.renderConnection(connection, container || blockElt, insideBlock, b.size);
+			this.renderConnection(connection, connectionContainer, insideBlock, b.size);
 		});
 		return blockElt;
 	}
 
 	renderPilot(container) {
 		const pilotElt = this.addElement('pilot', container, 'pilot');
-		DomRenderer.setElementSizeAndPosition(pilotElt, 8, 8, -16, -4, this.zoom);
+		DomRenderer.setElementSizeAndPosition(pilotElt, 8, 8, -12, 0, 0, this.zoom);
 	}
 	
 	renderVehicle(veh) {
 		const vehElt = this.addElement(veh.id, this.elements.vehicles, 'vehicle');
 		const { style } = vehElt;
-		style.transform = `rotate(${veh.rotation}deg)`;
+		style.transform = `translate(${veh.pos.x * this.zoom}vmin, ${veh.pos.y * this.zoom}vmin) rotate(${veh.rotation}deg)`;
 		this.renderPilot(vehElt);
 		const blockIds = [];
 		veh.blockSet.forEach((b) => {
 			this.renderBlock(b, vehElt, this.elements.connections);
 			blockIds.push(b.id);
 		});
-		this.elements.connections.style.transform = `rotate(${veh.rotation}deg)`;
+		this.elements.connections.style.transform = `translate(${veh.pos.x * this.zoom}vmin, ${veh.pos.y * this.zoom}vmin) rotate(${veh.rotation}deg)`;
 		// Loop through all block elements, and remove the ones we no longer are tracking
 		const blocksCollection = vehElt.querySelectorAll('.block');
 		for (let i = 0; i < blocksCollection.length; i++) {
@@ -155,6 +160,7 @@ class DomRenderer {
 		// Fix because the block in hand should use the full view screen sizes (vw, vh), not vmin
 		blockElt.style.top = `calc(${blockInHand.pos.y}vh - ${blockInHand.size.y / 2}vmin)`;
 		blockElt.style.left = `calc(${blockInHand.pos.x}vw - ${blockInHand.size.x / 2}vmin)`;
+		blockElt.style.transform = '';
 		// const blockElt = this.addElement('blockInHand', this.elements.hand, 'block');
 		// blockElt.style.top = mouseCoordinates[1] + 'px';
 		// blockElt.style.left = mouseCoordinates[0] + 'px';
@@ -162,10 +168,7 @@ class DomRenderer {
 
 	renderHole(hole, focusPosition, planetRadius) {
 		const elt = this.addElement(hole.id, this.elements.holes, 'hole');
-		const halfHoleSize = hole.size / 2;
-		DomRenderer.setElementSizeAndPosition(elt, hole.size, hole.size, hole.pos.y + planetRadius, planetRadius - halfHoleSize, this.zoom);
-		const style = elt.style;
-		style.transform = `rotate(${hole.rotation}deg)`;
+		DomRenderer.setElementSizeAndPosition(elt, hole.size, hole.size, hole.pos.y + planetRadius, planetRadius, hole.rotation, this.zoom);
 	}
 
 	renderPlanet(planet, focusPosition) {
@@ -173,11 +176,16 @@ class DomRenderer {
 		const planetStyle = planetElt.style;
 		const { diameter } = planet;
 		const radius = diameter / 2;
-		const offsetX = -1 * radius - focusPosition.x;
-		const offsetY = -1 * radius - focusPosition.y;
-		DomRenderer.setElementSizeAndPosition(planetElt, diameter, diameter, offsetY, offsetX, this.zoom);
-		planetStyle.top = `calc(50vh + ${offsetY}vmin)`;
-		planetStyle.left = `calc(50vw + ${offsetX}vmin)`;
+		const { x, y } = planet.pos;
+		const offsetX = -1 * radius; // - focusPosition.x;
+		const offsetY = -1 * radius; // - focusPosition.y;
+		DomRenderer.setElementSizeAndPosition(planetElt, diameter, diameter, y, x, 0, this.zoom);
+		// planetStyle.top = `${offsetY}vmin`;
+		// planetStyle.left = `${offsetX}vmin`;
+		// planetStyle.top = 0;
+		// planetStyle.left = 0;
+		// planetStyle.transform = `translate(${offsetX * this.zoom}vmin, ${offsetY * this.zoom}vmin)`;
+		
 		const holeIds = [];
 		planet.holes.forEach((h) => {
 			this.renderHole(h, focusPosition, radius);
@@ -204,16 +212,22 @@ class DomRenderer {
 			buttonElt.innerText = DomRenderer.convertSnakeCaseToPlainText(vt.type);
 			buttonElt.dataset.type = vt.type;
 		});
-		
+	}
+
+	renderFocus(focusPosition) {
+		// console.log(this.elements.world.style);
+		this.elements.world.style.transform = `translate(${focusPosition.x * this.zoom}vmin, ${-1 * focusPosition.y * this.zoom}vmin)`;
 	}
 	
-	render({ vehicles, blockInHand, connections, planet, focusPosition, distToCore }) {
+	render({ vehicles, blockInHand, connections, planet, focusPosition, distToCore, zoom }) {
+		this.zoom = 1 / zoom;
 		this.showConnections = Boolean(blockInHand);
 		this.highlightConnectionIds = connections.map((c) => c?.id);
 		vehicles.forEach((v) => this.renderVehicle(v));
 		this.renderBuildUI();
 		this.renderHand(blockInHand);
 		this.renderPlanet(planet, focusPosition);
+		this.renderFocus(focusPosition);
 		const level = planet.getLevelData(distToCore).level;
 		const depth = planet.radius - distToCore;
 		this.elements.depthNumber.innerText = Math.round(Math.max(0, depth)).toLocaleString() + ` Level: ${level}`;
@@ -228,6 +242,7 @@ class DomRenderer {
 		this.elements.holes = document.querySelector('.holes');
 		this.elements.depthNumber = document.querySelector('.depth-number');
 		this.elements.blockInfoWindows = document.querySelector('.block-info-windows');
+		this.elements.world = document.querySelector('.world');
 	}
 }
 

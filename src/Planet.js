@@ -4,6 +4,7 @@ class Planet {
 	constructor(multiplier = 1) {
 		this.radius = RADIUS * multiplier;
 		this.diameter = this.radius * 2;
+		this.pos = { x: 0, y: 0 };
 		this.holes = [];
 	}
 

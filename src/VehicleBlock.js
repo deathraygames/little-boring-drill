@@ -85,12 +85,12 @@ class VehicleBlock {
 		return connectedBlocks;
 	}
 
-	getBlockCenter() {
-		return {
-			x: this.pos.x - (this.size.x / 2),
-			y: this.pos.y - (this.size.y / 2),
-		};
-	}
+	// getBlockCenter() {
+	// 	return {
+	// 		x: this.pos.x - (this.size.x / 2),
+	// 		y: this.pos.y - (this.size.y / 2),
+	// 	};
+	// }
 
 	getFreeConnections() {
 		return this.connections.filter((c) => !c.block);
