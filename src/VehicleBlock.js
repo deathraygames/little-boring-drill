@@ -1,6 +1,8 @@
 import vehicleBlockTypes from './vehicleBlockTypes.js';
 import itemTypes from './itemTypes.js';
 import { getUniqueId, shuffle, rotate } from './utilities.js';
+import Vehicle from './Vehicle.js';
+import Cargo from './Cargo.js';
 
 let i = 0;
 
@@ -34,7 +36,7 @@ class VehicleBlock {
 		this.id = 'vb-' + getUniqueId();
 		this.cost = this.typeObject.cost;
 		this.costLeft = { ...this.cost };
-		this.cargo = {};
+		this.cargo = new Cargo(this.typeObject.cargoSpace);
 		this.power = 0;
 		this.rotation = 0;
 		this.on = false;
@@ -79,6 +81,19 @@ class VehicleBlock {
 		return (!this.costLeft && this.on); // && this.power); // TODO: has power
 	}
 
+	// Cargo pass-through methods
+	addCargo(item) { return this.cargo.addInput(item); }
+	emptyCargo() { return this.cargo.empty(); }
+	removeCargoByProperty(propName) { return this.cargo.removeByProperty(propName); }
+	removeCargoByItemKey(key) { return this.cargo.removeByItemKey(key); }
+	processCargoInput() { return this.cargo.processInput(); }
+	// getCargoKeys() { return this.cargo.getKeys(); }
+	getCargoSpaceUsed() { return this.cargo.getSpaceUsed(); }
+	getFreeSpace() { return this.cargo.getFreeSpace(); }
+	mapCargo(fn) {
+		return this.cargo.getKeys().map((key, i) => fn(key, this.cargo.get(key), i))
+	}
+
 	getNeighbors() {
 		const connectedConnections = this.connections.filter((c) => c.connection);
 		const connectedBlocks = connectedConnections.map((c) => c.connection.parentBlock);
@@ -96,18 +111,6 @@ class VehicleBlock {
 		return this.connections.filter((c) => !c.block);
 	}
 
-	getCargoKeys() {
-		return Object.keys(this.cargo).filter((key) => this.cargo[key] > 0);
-	}
-
-	getCargoSpaceUsed() {
-		return this.getCargoKeys().reduce((sum, key) => sum + this.cargo[key], 0);
-	}
-
-	getFreeSpace() {
-		return this.typeObject.cargoSpace - this.getCargoSpaceUsed();
-	}
-
 	hasCapability(name) {
 		return this.typeObject[name] > 0;
 	}
@@ -119,36 +122,6 @@ class VehicleBlock {
 		if (leftCount <= 0) this.costLeft = 0;
 	}
 
-	addCargo(item, num = 1) {
-		let left = num;
-		while (left > 0) {
-			if (this.getFreeSpace() <= 0) return left;
-			// console.log('Adding cargo', item.key, 'to', this.type);
-			this.cargo[item.key] = (this.cargo[item.key] || 0) + 1;
-			left -= 1;
-		}
-		return left;
-	}
-
-	removeCargoByItemKey(key) {
-		if (!this.cargo[key]) return null;
-		this.cargo[key] -= 1;
-		return { key };
-	}
-
-	emptyCargo() {
-		for (let key in this.cargo) delete this.cargo[key];
-	}
-
-	removeCargoByProperty(propName) {
-		const itemKeys = this.getCargoKeys().filter((key) => {
-			return itemTypes[key] && itemTypes[key][propName];
-		});
-		if (itemKeys.length <= 0) return null;
-		shuffle(itemKeys); // TODO: could make this more efficient since we're just picking one item
-		return this.removeCargoByItemKey(itemKeys[0]);
-	}
-
 	pullFromNeighborsByProperty(propName, takeHowMany = Infinity) {
 		const taken = [];
 		this.getNeighbors().forEach((n) => {
@@ -157,7 +130,7 @@ class VehicleBlock {
 			const removedItem = n.removeCargoByProperty(propName);
 			if (removedItem) {
 				// console.log('Refinery', this.type, 'removing', removedItem, 'from', n.type);
-				this.addCargo(removedItem);
+				this.cargo.addInput(removedItem);
 				taken.push(removedItem);
 			}
 		});
@@ -171,7 +144,7 @@ class VehicleBlock {
 		this.usePower(1);
 		const newItem = { key: itemTypes[item.key].refineTo };
 		// console.log('Refining to', newItem.key, 'in', this.type);
-		this.addCargo(newItem);
+		this.cargo.addInput(newItem);
 	}
 
 	print(t) {
@@ -181,7 +154,7 @@ class VehicleBlock {
 		this.usePower(1);
 		const newItem = { key: itemTypes[item.key].printTo };
 		// console.log('Printing to', newItem.key, 'in', this.type);
-		this.addCargo(newItem);
+		this.cargo.addInput(newItem);
 	}
 
 	usePower(n) {

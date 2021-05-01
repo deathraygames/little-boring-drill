@@ -26,7 +26,7 @@ class Zoomer {
 			this.zoom = Math.max(
 				this.MIN_ZOOM, Math.min(this.MAX_ZOOM, this.zoom + zoomDir * zoomSpeed)
 			);
-			console.log('zoom', this.zoom);
+			// console.log('zoom', this.zoom);
 		});
 	}
 

@@ -26,7 +26,7 @@ class DomRenderer {
 			`<div>
 				<dt>Cargo: (max ${o.cargoSpace})</dt>
 				<div class="cargo-list">
-					${block.getCargoKeys().map((key) => `<dd>${block.cargo[key]} ${key}</dd>`).join('')}
+					${block.mapCargo((key, value) => `<dd>${value} ${key}</dd>`).join('')}
 				</div>
 			</div>`
 		);

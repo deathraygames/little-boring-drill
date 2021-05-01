@@ -114,6 +114,7 @@ class Vehicle {
 	}
 
 	collectOre(freeItems) {
+		if (freeItems.length <= 0) return;
 		const drills = this.getShuffledBlocksArray().filter((b) => b.hasCapability('drilling') && b.getFreeSpace() > 0 && b.isOperational());
 		if (drills.length <= 0) return;
 		shuffle(freeItems);
@@ -172,6 +173,8 @@ class Vehicle {
 			if (pulls) b.pullFromNeighborsByProperty(pulls, pulling);
 		});
 		// TODO: Then conveyer belts pull and push
+		// Finish the move by processing cargo coming in
+		this.blockSet.forEach((b) => b.processCargoInput());
 	}
 
 	generatePower(t) {

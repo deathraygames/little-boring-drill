@@ -128,15 +128,13 @@ a, a:visited {
 .world {
 	top: 50vh;
 	left: 50vw;
-	border: solid green 4px;
-	/* transform: translate(-500px, -500px); */
 }
 
 .vehicle,
 .connections {
 	position: absolute;
 	z-index: 4;
-	border: dashed 2px rgba(255, 255, 255, 0.2);
+	/* border: dashed 2px rgba(255, 255, 255, 0.2); */
 	min-height: 1vmin;
 	min-width: 1vmin;
 }
@@ -181,6 +179,7 @@ a, a:visited {
 	z-index: 3;
 	top: 0;
 	left: 0;
+	background: rgba(0,0,0,0.1);
 }
 .block-info {
 	display: flex;
