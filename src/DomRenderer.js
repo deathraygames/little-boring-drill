@@ -12,6 +12,27 @@ class DomRenderer {
 		return text.split('-').join(' ');
 	}
 
+	static getVehicleCargoHtml(veh) {
+		const cargoContents = veh.getCargoContents();
+		const itemKeys = Object.keys(cargoContents).sort((a, b) => cargoContents[a] - cargoContents[b]);
+		return (
+			`<ol>${itemKeys.map((key) => `<li>${cargoContents[key]} ${key}</li>`).join('')}</ol>`
+		);
+	}
+
+	static getBlockCargoHtml(block) {
+		const space = block.getCargoSpace();
+		if (space <= 0) return '';
+		return (
+			`<div>
+				<dt>Cargo: (max ${space})</dt>
+				<div class="cargo-list">
+					${block.mapCargo((key, value) => `<dd>${value} ${key}</dd>`).join('')}
+				</div>
+			</div>`
+		);
+	}
+
 	static getBlockInfoHtml(block) {
 		const o = block.typeObject;
 		const exclude = ['type', 'category', 'squareSize', 'cost', 'connections', 'powerCapacity', 'cargoSpace'];
@@ -22,14 +43,7 @@ class DomRenderer {
 				${Object.keys(block.costLeft).map((key) => `<dd>${block.costLeft[key]} ${key}</dd>`).join('')}
 			</div>`
 		);
-		const cargoList = (o.cargoSpace <= 0) ? '' : (
-			`<div>
-				<dt>Cargo: (max ${o.cargoSpace})</dt>
-				<div class="cargo-list">
-					${block.mapCargo((key, value) => `<dd>${value} ${key}</dd>`).join('')}
-				</div>
-			</div>`
-		);
+
 		return (
 			`<dl>
 				${costHtml}
@@ -39,7 +53,7 @@ class DomRenderer {
 					<dd class="${block.on ? 'on' : 'off'}">${block.on ? 'ON' : 'OFF'}</dd>
 				</div>
 				${keys.map((key) => `<div><dt>${key}</dt><dd>${o[key]}</dd></div>`).join('')}
-				${cargoList}
+				${DomRenderer.getBlockCargoHtml(block)}
 			</dl>`
 		);
 	}
@@ -218,6 +232,19 @@ class DomRenderer {
 		// console.log(this.elements.world.style);
 		this.elements.world.style.transform = `translate(${focusPosition.x * this.zoom}vmin, ${-1 * focusPosition.y * this.zoom}vmin)`;
 	}
+
+	renderCargo(veh) {
+		const { freeSpace, spaceUsed, totalSpace } = veh.getCargoSpace();
+		this.elements.totalCargoUsedNumber.innerText = spaceUsed;
+		this.elements.totalCargoCapacityNumber.innerText = totalSpace;
+		this.elements.totalCargoDetails.innerHTML = DomRenderer.getVehicleCargoHtml(veh);
+	}
+
+	renderNumbers({ planet, distToCore, vehicles }) {
+		const level = planet.getLevelData(distToCore).level;
+		const depth = planet.radius - distToCore;
+		this.elements.depthNumber.innerText = Math.round(Math.max(0, depth)).toLocaleString() + ` Level: ${level}`;
+	}
 	
 	render({ vehicles, blockInHand, connections, planet, focusPosition, distToCore, zoom }) {
 		this.zoom = 1 / zoom;
@@ -228,21 +255,29 @@ class DomRenderer {
 		this.renderHand(blockInHand);
 		this.renderPlanet(planet, focusPosition);
 		this.renderFocus(focusPosition);
-		const level = planet.getLevelData(distToCore).level;
-		const depth = planet.radius - distToCore;
-		this.elements.depthNumber.innerText = Math.round(Math.max(0, depth)).toLocaleString() + ` Level: ${level}`;
+		this.renderNumbers({ planet, distToCore, vehicles });
+		this.renderCargo(vehicles[0]);
 	}
 
 	init() {
-		this.elements.vehicles = document.querySelector('.vehicles');
-		this.elements.connections = document.querySelector('.connections');
-		this.elements.planet = document.querySelector('.planet');
-		this.elements.hand = document.querySelector('.hand');
-		this.elements.buildBlockList = document.querySelector('.build-block-list');
-		this.elements.holes = document.querySelector('.holes');
-		this.elements.depthNumber = document.querySelector('.depth-number');
-		this.elements.blockInfoWindows = document.querySelector('.block-info-windows');
-		this.elements.world = document.querySelector('.world');
+		const eltSelectors = {
+			vehicles: '.vehicles',
+			connections: '.connections',
+			planet: '.planet',
+			hand: '.hand',
+			buildBlockList: '.build-block-list',
+			holes: '.holes',
+			depthNumber: '.depth-number',
+			totalCargoToggle: '#total-cargo-toggle',
+			totalCargoUsedNumber: '.total-cargo-used-number',
+			totalCargoCapacityNumber: '.total-cargo-capacity-number',
+			totalCargoDetails: '.total-cargo-details',
+			blockInfoWindows: '.block-info-windows',
+			world: '.world',
+		};
+		for (const key in eltSelectors) {
+			this.elements[key] = document.querySelector(eltSelectors[key]);
+		}
 	}
 }
 

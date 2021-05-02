@@ -14,13 +14,13 @@ const MAX_HOLES = 200;
 const focusPosition = { x: 0, y: 0 };
 const zoomer = new Zoomer();
 const renderer = new DomRenderer();
-const vehicles = new Set();
+const vehicles = [];
 const achievements = {};
 const drill = new Vehicle();
 
 let planetMultiplier = 1;
 let planet = new Planet();
-vehicles.add(drill);
+vehicles.push(drill);
 drill.pos.y = (planet.radius * -1) - 14;
 drill.addBlock('mini-dome', 0, -13);
 drill.addBlock('survival-core', 0, 0);

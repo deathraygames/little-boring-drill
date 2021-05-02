@@ -62,6 +62,30 @@ class Vehicle {
 		this.blockSet.forEach((b) => b.costLeft = 0);
 	}
 
+	getCargoSpace() {
+		let freeSpace = 0;
+		let spaceUsed = 0;
+		let totalSpace = 0;
+		this.getBlocksArray().forEach((b) => {
+			const blockSpaceUsed = b.getCargoSpaceUsed();
+			const blockCargoSize = b.getCargoSpace();
+			freeSpace += (blockCargoSize - blockSpaceUsed);
+			spaceUsed += blockSpaceUsed;
+			totalSpace += blockCargoSize;
+		});
+		return { freeSpace, spaceUsed, totalSpace };
+	}
+
+	getCargoContents() {
+		const contents = {};
+		this.getBlocksArray().forEach((b) => {
+			b.cargo.getKeys().forEach((itemKey) => {
+				contents[itemKey] = (contents[itemKey] || 0) + b.cargo.get(itemKey);
+			});
+		});
+		return contents;
+	}
+
 	getOperationalDrills() {
 		return this.getBlocksArray().filter((b) => b.hasCapability('drilling') && b.isOperational());
 	}

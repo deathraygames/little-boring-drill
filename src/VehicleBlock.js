@@ -88,6 +88,7 @@ class VehicleBlock {
 	removeCargoByItemKey(key) { return this.cargo.removeByItemKey(key); }
 	processCargoInput() { return this.cargo.processInput(); }
 	// getCargoKeys() { return this.cargo.getKeys(); }
+	getCargoSpace() { return this.cargo.size; }
 	getCargoSpaceUsed() { return this.cargo.getSpaceUsed(); }
 	getFreeSpace() { return this.cargo.getFreeSpace(); }
 	mapCargo(fn) {
