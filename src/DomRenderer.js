@@ -33,6 +33,21 @@ class DomRenderer {
 		);
 	}
 
+	static getMilliSecondsForDisplay(n) {
+		if (n <= 0) return '--';
+		return (n >= 10000) ? `${Math.floor(n / 1000)}s` : `${Math.floor(n / 100) / 10}s`;
+	}
+
+	static getWorkingHtml(block) {
+		return (
+			`<div>
+				<div>Working: ${block.workType || ''}
+					${DomRenderer.getMilliSecondsForDisplay(block.workCooldown)}</div>
+				<div>Cooldown: ${DomRenderer.getMilliSecondsForDisplay(block.generalCooldown)}</div>
+			</div>`
+		);
+	}
+
 	static getBlockInfoHtml(block) {
 		const o = block.typeObject;
 		const exclude = ['type', 'category', 'squareSize', 'cost', 'connections', 'powerCapacity', 'cargoSpace'];
@@ -43,16 +58,16 @@ class DomRenderer {
 				${Object.keys(block.costLeft).map((key) => `<dd>${block.costLeft[key]} ${key}</dd>`).join('')}
 			</div>`
 		);
-
 		return (
 			`<dl>
 				${costHtml}
 				<div>
 					<dt>Power:</dt>
-					<dd>${block.power} / ${o.powerCapacity}</dd>
+					<!-- <dd>${block.power} / ${o.powerCapacity}</dd> -->
 					<dd class="${block.on ? 'on' : 'off'}">${block.on ? 'ON' : 'OFF'}</dd>
 				</div>
 				${keys.map((key) => `<div><dt>${key}</dt><dd>${o[key]}</dd></div>`).join('')}
+				${DomRenderer.getWorkingHtml(block)}
 				${DomRenderer.getBlockCargoHtml(block)}
 			</dl>`
 		);

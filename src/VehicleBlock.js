@@ -4,6 +4,11 @@ import { getUniqueId, shuffle, rotate } from './utilities.js';
 import Vehicle from './Vehicle.js';
 import Cargo from './Cargo.js';
 
+const capabilityItemPropertyMap = {
+	printing: 'printTo',
+	refining: 'refineTo',
+};
+
 let i = 0;
 
 class VehicleBlockConnection {
@@ -37,9 +42,13 @@ class VehicleBlock {
 		this.cost = this.typeObject.cost;
 		this.costLeft = { ...this.cost };
 		this.cargo = new Cargo(this.typeObject.cargoSpace);
+		this.working = new Cargo(1);
 		this.power = 0;
 		this.rotation = 0;
 		this.on = false;
+		this.workCooldown = 0; // Cooldown for work being done (in ms)
+		this.generalCooldown = 0; // Cooldown for being available to do anything at all (in ms)
+		this.workType = null; // What kind of work are you doing right now?
 		this.connections = this.typeObject.connections.map((arr) => {
 			return new VehicleBlockConnection(this, arr[0] * (this.size.x/2), arr[1] * (this.size.y/2));
 		});
@@ -79,6 +88,10 @@ class VehicleBlock {
 
 	isOperational() {
 		return (!this.costLeft && this.on); // && this.power); // TODO: has power
+	}
+
+	isReadyForWork() {
+		return this.generalCooldown <= 0 && this.workCooldown <= 0;
 	}
 
 	// Cargo pass-through methods
@@ -123,9 +136,16 @@ class VehicleBlock {
 		if (leftCount <= 0) this.costLeft = 0;
 	}
 
+	getWorkCooldownAmount(tier = 1, base = 100, multiplier = 200) {
+		const MAX_TIER = 6;
+		return base + Math.max(0, MAX_TIER - tier) * multiplier;
+	}
+
 	pullFromNeighborsByProperty(propName, takeHowMany = Infinity) {
+		if (!this.hasCapability('pulling') || this.getFreeSpace() <= 0 || !this.isOperational() || !this.isReadyForWork()) return;
 		const taken = [];
-		this.getNeighbors().forEach((n) => {
+		const neighbors = shuffle(this.getNeighbors());
+		neighbors.forEach((n) => {
 			if (taken.length >= takeHowMany) return taken;
 			// TODO: Handle ability to take multiple items from neighbors (i.e., more than 4 total)
 			const removedItem = n.removeCargoByProperty(propName);
@@ -135,31 +155,78 @@ class VehicleBlock {
 				taken.push(removedItem);
 			}
 		});
+		if (taken.length) {
+			this.generalCooldown += this.getWorkCooldownAmount(this.typeObject.pulling);
+		}
 		return taken;
 	}
 
 	refine(t) {
-		if (!this.hasCapability('refining') || this.getCargoSpaceUsed() <= 0 || !this.isOperational()) return;
-		const item = this.removeCargoByProperty('refineTo');
-		if (!item) return;
-		this.usePower(1);
-		const newItem = { key: itemTypes[item.key].refineTo };
-		// console.log('Refining to', newItem.key, 'in', this.type);
-		this.cargo.addInput(newItem);
+		if (this.working.getSpaceUsed() > 0) {
+			this.finishWork('refining');
+		} else {
+			this.startWork('refining');
+		}
+		return;
 	}
 
 	print(t) {
-		if (!this.hasCapability('printing') || this.getCargoSpaceUsed() <= 0 || !this.isOperational()) return;
-		const item = this.removeCargoByProperty('printTo');
-		if (!item) return;
-		this.usePower(1);
-		const newItem = { key: itemTypes[item.key].printTo };
-		// console.log('Printing to', newItem.key, 'in', this.type);
-		this.cargo.addInput(newItem);
+		if (this.working.getSpaceUsed() > 0) {
+			this.finishWork('printing');
+		} else {
+			this.startWork('printing');
+		}
+		return;
+	}
+
+	startWork(workCapability) {
+		if (
+			!this.hasCapability(workCapability) // Doesn't have this capability
+			|| this.getCargoSpaceUsed() <= 0 // Doesn't have something to work on
+			|| !this.isOperational() // Isn't even operational
+			|| this.working.getFreeSpace() === 0 // No space in working inventory
+			|| this.workCooldown > 0 // Haven't finished previous work?
+			|| this.generalCooldown > 0 // Hasn't cooled down
+		) return;
+		const itemProp = capabilityItemPropertyMap[workCapability]; // e.g., 'printTo'
+		const item = this.removeCargoByProperty(itemProp);
+		if (!item) return; // Doesn't have the item we need to work on
+		this.workType = workCapability;
+		this.working.add(item);
+		this.cargo.reserveSpace(1);
+		this.workCooldown += this.getWorkCooldownAmount(this.typeObject[workCapability]);
+		this.generalCooldown += 100;
+	}
+
+	finishWork(workCapability) { // e.g., 'printTo', 'refinedTo'
+		if (
+			this.workType !== workCapability // Not working on this right now
+			|| !this.hasCapability(workCapability) // Doesn't have this capability
+			|| !this.isOperational() // Not even operational
+			|| this.workCooldown > 0 // Haven't finished yet
+			|| this.working.getSpaceUsed() === 0 // working inventory is empty
+			|| this.generalCooldown > 0 // Hasn't cooled down
+		) return;
+		const itemKey = this.working.getKeys()[0];
+		if (!itemKey || this.working.get(itemKey) <= 0) return; // No actual item in working inv
+		const itemProp = capabilityItemPropertyMap[workCapability];
+		const newItemKey = itemTypes[itemKey][itemProp];
+		if (!newItemKey) { console.warn(newItemKey); return; } // Something went wrong
+		this.working.empty(); // item in working inventory is discarded
+		this.cargo.freeReservedSpace();
+		this.cargo.addInput({ key: newItemKey });
+		console.log('Finishing work... removing', itemKey, 'and adding', newItemKey);
+		this.generalCooldown += 100;
+		this.workType = null;
 	}
 
 	usePower(n) {
 		this.power = Math.max(0, this.power - n);
+	}
+
+	cool(t) {
+		this.generalCooldown = Math.max(0, this.generalCooldown - t);
+		this.workCooldown = Math.max(0, this.workCooldown - t);
 	}
 
 	generatePower(t) {

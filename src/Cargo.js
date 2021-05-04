@@ -9,6 +9,7 @@ class Cargo {
 		this.contents = {};
 		this.input = {}; // Temporary storage
 		this.size = size;
+		this.reserved = 0;
 	}
 
 	get(key) {
@@ -21,11 +22,20 @@ class Cargo {
 	}
 
 	getSpaceUsed() {
-		return this.getKeys().reduce((sum, key) => sum + this.get(key), 0);
+		const space = this.getKeys().reduce((sum, key) => sum + this.get(key), 0);
+		return space;
 	}
 
 	getFreeSpace() {
-		return this.size - this.getSpaceUsed();
+		return this.size - this.getSpaceUsed() - this.reserved;
+	}
+
+	reserveSpace(n = 1) {
+		this.reserved = Math.min(this.size, this.reserved + n);
+	}
+
+	freeReservedSpace(n = 1) {
+		this.reserved = Math.max(0, this.reserved - n);
 	}
 
 	static add(cargo, itemKey, num = 1, where = CONTENTS) {
@@ -49,22 +59,29 @@ class Cargo {
 	}
 
 	processInput() {
-		for (const key in this.input) {
-			const num = this.input[key] || 0;
-			delete this.input[key];
+		this.switch(INPUT, CONTENTS);
+	}
+
+	switch(fromName = INPUT, toName = CONTENTS) {
+		const fromArea = this[fromName];
+		for (const key in fromArea) {
+			const num = fromArea[key] || 0;
+			delete fromArea[key];
 			// Don't have to check free space because we assume a check was done when adding to input
-			this.contents[key] = (this.contents[key] || 0) + num;
+			this[toName][key] = (this[toName][key] || 0) + num;
 		}
 	}
 
-	removeByItemKey(key) {
-		if (!this.contents[key]) return null;
-		this.contents[key] -= 1;
+	removeByItemKey(key, fromName = CONTENTS) {
+		const fromArea = this[fromName];
+		if (!fromArea[key]) return null;
+		fromArea[key] -= 1;
 		return { key };
 	}
 
-	empty() {
-		for (let key in this.contents) delete this.contents[key];
+	empty(fromName = CONTENTS) {
+		const fromArea = this[fromName];
+		for (let key in fromArea) delete fromArea[key];
 	}
 
 	removeByProperty(propName) {

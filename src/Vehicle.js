@@ -180,7 +180,8 @@ class Vehicle {
 				return b.hasCapability(capability)
 					&& b.hasCapability('pulling')
 					&& b.getFreeSpace() > 0
-					&& b.isOperational();
+					&& b.isOperational()
+					&& b.isReadyForWork();
 			});
 		};
 		// Refineries pull first
@@ -189,8 +190,7 @@ class Vehicle {
 		// Then printers pull
 		const printers = getFreeOperationalPullingBlocksByCapability('printing');
 		printers.forEach((b) => b.pullFromNeighborsByProperty('printTo', b.typeObject.pulling));
-		// Anything that can pull (Cargo, printers, refineries) will pull "final" items
-		// so that they can end up into cargo containers
+		// Anything that can pull will pull a `pulls` type of item
 		const pullers = getFreeOperationalPullingBlocksByCapability('pulling');
 		pullers.forEach((b) => {
 			const { pulls, pulling } = b.typeObject;
@@ -201,10 +201,6 @@ class Vehicle {
 		this.blockSet.forEach((b) => b.processCargoInput());
 	}
 
-	generatePower(t) {
-		this.blockSet.forEach((b) => b.generatePower(t));
-	}
-
 	run(t, freeItems) {
 		this.construct(t);
 		this.collect(t, freeItems);
@@ -212,7 +208,10 @@ class Vehicle {
 		this.refine(t);
 		this.supportLife(t);
 		this.convey(t);
-		this.generatePower(t);
+		this.blockSet.forEach((b) => {
+			b.cool(t);
+			b.generatePower(t);
+		});
 	}
 }
 
