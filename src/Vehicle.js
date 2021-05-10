@@ -1,6 +1,8 @@
 import VehicleBlock from './VehicleBlock.js';
 import { getUniqueId, shuffle, shuffleOne } from './utilities.js';
 
+const MAX_SPEED = 15;
+
 class Vehicle {
 	constructor() {
 		this.blockSet = new Set();
@@ -10,6 +12,9 @@ class Vehicle {
 			y: 0,
 		};
 		this.rotation = 0;
+		// Cached values
+		this.lastDrillPower = 0;
+		this.lastSpeed = 0;
 	}
 
 	getBlocks() {
@@ -95,7 +100,16 @@ class Vehicle {
 	}
 
 	getDrillPower() {
-		return this.getOperationalDrills().reduce((sum, b) => Math.pow(b.typeObject.drilling, 2) + sum, 0);
+		this.lastDrillPower = this.getOperationalDrills().reduce((sum, b) => Math.pow(b.typeObject.drilling, 2) + sum, 0);
+		return this.lastDrillPower;
+	}
+
+	getSpeed(hardness) {
+		const power = this.getDrillPower();
+		const speed = (hardness === 0) ? power * 2 : power / hardness;
+		// if (tick % 20 === 0) { console.log('power', power, 'hardness', hardness, 'speed', speed); }
+		this.lastSpeed = Math.min(speed, MAX_SPEED);
+		return this.lastSpeed;
 	}
 
 	getDrillMaxTier() {

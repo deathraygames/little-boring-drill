@@ -53,25 +53,31 @@
 				<div class="connections"></div>
 			</div>
 		</article>
-		<section class="vehicle-info">
-			<div>
-				<input type="checkbox" id="total-cargo-toggle" />
-				<div class="total-cargo-details">
-					<!-- populated by renderer -->
-				</div>
-				<label for="total-cargo-toggle" class="total-cargo-toggle-label">
-					&Sigma; Cargo:
-					<span class="total-cargo-used-number"></span> /
-					<span class="total-cargo-capacity-number"></span>
-				</label>
-			</div>
-		</section>
 		<section class="block-info-windows">
 			<!-- populated by renderer -->
 		</section>
 		<!-- <section class="connections"></section> -->
 		<footer class="info-footer">
-			<div class="depth">Depth: <span class="depth-number">_</span></div>
+			<div>
+				<input type="checkbox" id="location-info-toggle" class="info-details-toggle" />
+				<div class="info-details location-info-details">
+					<!-- populated by renderer -->
+				</div>
+				<label for="location-info-toggle" class="info-details-toggle-label">
+					Depth: <span class="depth-number">_</span>
+				</label>
+			</div>
+			<div>
+				<input type="checkbox" id="total-cargo-toggle" class="info-details-toggle" />
+				<div class="info-details total-cargo-details">
+					<!-- populated by renderer -->
+				</div>
+				<label for="total-cargo-toggle" class="info-details-toggle-label">
+					&Sigma; Cargo:
+					<span class="total-cargo-used-number"></span> /
+					<span class="total-cargo-capacity-number"></span>
+				</label>
+			</div>
 		</footer>
 		<nav class="build-ui">
 			<ol class="build-category-list">

@@ -7,7 +7,6 @@ import Planet from './Planet.js';
 
 console.log('game');
 
-const MAX_SPEED = 15;
 const CORE_ACHIEVEMENT = 'reached the core';
 const TICK_TIME = 100; // ms
 const MAX_HOLES = 200;
@@ -106,16 +105,9 @@ function findConnections() {
 	return connections;
 }
 
-function getSpeed(hardness) {
-	const power = drill.getDrillPower();
-	const speed = (hardness === 0) ? power * 2 : power / hardness;
-	if (tick % 10 === 0) { console.log('power', power, 'hardness', hardness, 'speed', speed); }
-	return Math.min(speed, MAX_SPEED);
-}
-
 function getTickDistance(level) {
 	// TODO: incorporate TICK_TIME
-	return Math.random() * getSpeed(level.hardness);
+	return Math.random() * drill.getSpeed(level.hardness);
 }
 
 function achieve(name) {

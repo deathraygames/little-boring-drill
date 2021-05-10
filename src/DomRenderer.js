@@ -255,10 +255,17 @@ class DomRenderer {
 		this.elements.totalCargoDetails.innerHTML = DomRenderer.getVehicleCargoHtml(veh);
 	}
 
-	renderNumbers({ planet, distToCore, vehicles }) {
-		const level = planet.getLevelData(distToCore).level;
+	renderLocationInfo({ planet, distToCore, vehicles }) {
+		const veh = vehicles[0];
+		const level = planet.getLevelData(distToCore);
+		const levelNum = level.level;
 		const depth = planet.radius - distToCore;
-		this.elements.depthNumber.innerText = Math.round(Math.max(0, depth)).toLocaleString() + ` Level: ${level}`;
+		this.elements.depthNumber.innerText = Math.round(Math.max(0, depth)).toLocaleString() + ` Level: ${levelNum}`;
+		this.elements.locationInfoDetails.innerHTML = (
+			`Drill Power: ${veh.lastDrillPower}
+			<br>Level ${levelNum} Hardness: ${level.hardness}
+			<br>Speed: ${veh.lastSpeed}`
+		);
 	}
 	
 	render({ vehicles, blockInHand, connections, planet, focusPosition, distToCore, zoom }) {
@@ -270,7 +277,7 @@ class DomRenderer {
 		this.renderHand(blockInHand);
 		this.renderPlanet(planet, focusPosition);
 		this.renderFocus(focusPosition);
-		this.renderNumbers({ planet, distToCore, vehicles });
+		this.renderLocationInfo({ planet, distToCore, vehicles });
 		this.renderCargo(vehicles[0]);
 	}
 
@@ -287,6 +294,7 @@ class DomRenderer {
 			totalCargoUsedNumber: '.total-cargo-used-number',
 			totalCargoCapacityNumber: '.total-cargo-capacity-number',
 			totalCargoDetails: '.total-cargo-details',
+			locationInfoDetails: '.location-info-details',
 			blockInfoWindows: '.block-info-windows',
 			world: '.world',
 		};

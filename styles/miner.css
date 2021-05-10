@@ -176,47 +176,46 @@ a, a:visited {
 	filter: brightness(0.6);
 }
 
-
-.vehicle-info {
-	position: fixed;
-	z-index: 2;
-	bottom: 0;
-	right: 0;
-	display: flex;
-	background: rgba(0, 0, 0, 0.1);
-}
-
-.total-cargo-toggle-label {
+.info-details-toggle-label {
 	display: block;
 	padding: 0.5em 1em;
 	cursor: pointer;
 }
-.total-cargo-toggle-label:hover {
-	background: rgba(0, 0, 0, 0.5);
+.info-details-toggle-label:hover {
+	background: rgba(0, 0, 0, 0.3);
 }
-.total-cargo-details {
+
+.info-details {
 	transform: scale(0);
 	padding: 0;
-	max-width: 0;
+	max-width: 50vw;
 	max-height: 0;
 	transition: all 0.2s ease-in-out;
+	position: absolute;
+	bottom: -1em;
 }
-.total-cargo-details ol {
+.info-details ol,
+.info-details ul {
 	display: block;
 	padding: 0;
 	margin: 0;
 }
-.total-cargo-details li {
+.info-details li {
 	display: block;
 }
-#total-cargo-toggle {
+.info-details-toggle {
 	display: none;
 }
-#total-cargo-toggle:checked + .total-cargo-details {
+.info-details-toggle:checked + .info-details {
 	transform: scale(1);
 	padding: 1em;
 	max-width: 50vw;
 	max-height: 80vh;
+	bottom: 3em;
+}
+
+.location-info-details {
+	text-align: left;
 }
 
 
@@ -402,16 +401,15 @@ a, a:visited {
 
 .info-footer {
 	position: fixed;
+	display: flex;
+	justify-content: space-evenly;
 	z-index: 9;
 	bottom: 0;
-	left: calc(50vw - 5em);
-	width: 10em;
+	right: 0;
+	width: calc(100vw - 7em);
 	text-align: center;
 	padding: 1em;
 	color: #fff;
-}
-.depth {
-	font-size: 120%;
 }
 
 .b-aluminum-cargo-drill {
